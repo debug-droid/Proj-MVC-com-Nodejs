@@ -1,28 +1,34 @@
-const express = require('express');
-const exphbs = require('express-handlebars');
+const express = require('express')
+const exphbs = require('express-handlebars')
 
-const app = express();
+const app = express()
 
-const conn = require('./db/conn');
+const conn = require('./db/conn')
 
-const Task = require('./models/Task');
+// Models
+const Task = require('./models/Task')
 
-// configuração do handlebars
-app.engine('handlebars', exphbs.engine({extname: 'exphbs', defaultLayout: "main"}));
-app.set('view engine', 'handlebars');
+// routes
+const taskRoutes = require('./routes/tasksRoutes')
 
-// lê o corpo da requisição
+app.engine('handlebars', exphbs())
+app.set('view engine', 'handlebars')
+
 app.use(
-    express.urlencoded({
-        extended: true
-    })
-);
+  express.urlencoded({
+    extended: true,
+  }),
+)
 
-app.use(express.json());
+app.use(express.json())
 
-app.use(express.static('public'));
+app.use(express.static('public'))
 
-conn.sync().then(() => {
-    app.listen(3000);
-})
-.catch((err) => console.log(err));
+app.use('/tasks', taskRoutes)
+
+conn
+  .sync()
+  .then(() => {
+    app.listen(3000)
+  })
+  .catch((err) => console.log(err))
